@@ -6,7 +6,7 @@ var trialindex = 0;
 function responseListener(aresponse){//global so it'll be just sitting here available for the trial objects to use. So, it must accept whatever they're passing.
 //    console.log("responseListener heard: "+aresponse); //diag
     
-    $.post('/response',{myresponse:aresponse,sessionID:localStorage.getItem("ppntID")},function(success){
+    $.post('/response',{questionid:trials[trialindex].questionid,myresponse:aresponse,sessionID:localStorage.getItem("ppntID")},function(success){
     	console.log("Logging "+aresponse+":"+success);//For now server returns the string "success" for success, otherwise error message.
     });
     
@@ -33,6 +33,7 @@ var progressButtons = "<br/><button onclick='scrapeAnswers()'>Next</button>"
 //constructors for different question types follow: all MUST HAVE a 'drawMe' function, which MUST SET an appropriate scrapeanswers function that passes a string to responseListener, and have something that calls scrapeAnswers (probably progressButtons, but hey, could be something else).
 
 function textbox_question(qtext){ //qtext is a string
+    this.questionid=qtext;
 	 this.drawMe = function(mydiv){
 	     document.getElementById(mydiv).innerHTML = "<h3 class='qmain'>"+qtext+"</h3><br/><textarea id='textboxQ' style='width:500px; class=\"response\"'></textarea>"+progressButtons;
 
@@ -43,6 +44,7 @@ function textbox_question(qtext){ //qtext is a string
 }
 
 function textboxlist_question(qmain,labellist){ //qmain is a string, labellist is an array of strings
+    this.questionid=qmain;
     this.drawMe = function(mydiv){
 	var drawstring = "<h3 class='qmain'>"+qmain+"</qmain></br>";
 	for(var i=0;i<labellist.length;i++){
@@ -50,7 +52,7 @@ function textboxlist_question(qmain,labellist){ //qmain is a string, labellist i
 	}
 	drawstring+=progressButtons;
 	scrapeAnswers = function(){
-	    var responseString = qmain+" :: ";
+	    var responseString = "";
 	    for(var i=0;i<labellist.length;i++){
 		responseString+=labellist[i]+":"+document.getElementById('qlist'+i).value+"_";
 	    }
@@ -61,7 +63,8 @@ function textboxlist_question(qmain,labellist){ //qmain is a string, labellist i
 }//end textboxlist
 
 function dropdownlist_question(qmain,qoptions){
-     this.drawMe = function(mydiv){
+    this.questionid=qmain;
+    this.drawMe = function(mydiv){
 	 var drawstring = "<h3 class='qmain'>"+qmain+"</h3></br><select id='ddlist'>";
 	 for(var i=0;i<qoptions.length;i++){
 	     drawstring+="<option value='"+qoptions[i]+"'>"+qoptions[i]+"</option>";
@@ -76,6 +79,7 @@ function dropdownlist_question(qmain,qoptions){
 }
 
 function checkboxes_question(qmain,qoptions){
+    this.questionid=qmain;
      this.drawMe = function(mydiv){
 	 var drawstring = "<h3 class='qmain'>"+qmain+"</h3></br>";
 	 for(var i=0;i<qoptions.length;i++){
@@ -85,7 +89,7 @@ function checkboxes_question(qmain,qoptions){
 	 drawstring+="</br>"+progressButtons;
 
 	 scrapeAnswers = function(){
-	     var responseString = qmain+"::";
+	     var responseString = "";
 	     for(var i=0;i<qoptions.length;i++){
 		 if(document.getElementById('checkq'+i).checked)responseString+=document.getElementById('checkq'+i).value+"_";
 	     }

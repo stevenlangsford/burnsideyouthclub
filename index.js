@@ -55,19 +55,15 @@ app.get("/dashboard",function(req,res){
 
 app.get("/getresponses",requireLogin,function(req,res){
     var pool = new pg.Pool({connectionString:process.env.DATABASE_URL});
-    console.log("flag1");
     pool.connect(function(err,client,done){
-	console.log("flag2");
 	client.query('select * from responses',function(err,result){
 	    if(err){
-		{console.error("flag3"+err); res.send("Error "+err);}
+		{res.send("Error "+err);}
 	    }else{
-		console.log("flag4")
-		    //TODO do something sensible if there are no results!
-		var fields = ["time","sessionid","response"];
+		var fields = ["time","sessionid","questionid","response"];
 		var responses = [];
 		for(var i=0;i<result.rowCount;i++){
-		    responses.push({time:result.rows[i].time, sessionid:result.rows[i].sessionid,response:result.rows[i].response});
+		    responses.push({time:result.rows[i].time, sessionid:result.rows[i].sessionid,questionid:result.rows[i].questionid,response:result.rows[i].response});
 		}
 		    var response_csv = json2csv({data: responses, fields:fields}); //this may be an unholy way to create a csv. It evolved. Sorry.
 		    res.attachment("responsedata.csv");
@@ -76,7 +72,6 @@ app.get("/getresponses",requireLogin,function(req,res){
 	});//end query
     });
     pool.end();
-    console.log("flag 5")
 });
 
 
@@ -154,9 +149,10 @@ app.post('/response',function(req,res){
     )    
     // connection using created pool
     pool.connect(function(err, client, done) {
-    	client.query('insert into responses values ($1,$2,$3)', //NOTE this assumes table responses exists with cols 'time', 'ppntid' 'response_string'
+    	client.query('insert into responses values ($1,$2,$3,$4)', //NOTE this assumes table responses exists with cols 'time', 'ppntid' 'response_string'
 		     [Date.now(),
 		      req.body.sessionID,
+		      req.body.questionid,
 		      req.body.myresponse],
     		     function(err, result){
     			 if (err)
