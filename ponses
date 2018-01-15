@@ -1,0 +1,9 @@
+           List of relations
+ Schema |     Name     | Type  | Owner  
+--------+--------------+-------+--------
+ public | demographics | table | steven
+ public | questions    | table | steven
+ public | responses    | table | steven
+ public | test_table   | table | steven
+(4 rows)
+

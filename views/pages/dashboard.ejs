@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="js/jquery-1.11.3.min.js"></script>
-    <title>Study</title>
+    <title>BYC</title>
 
   </head>
   <body>
@@ -30,10 +30,8 @@ $.post("/login",{token:document.getElementById('logintextarea').value},function(
 
 	<% if(auth=="notyet"){%>
 	<p>Login key:<textarea id='logintextarea'></textarea><button onclick='login()'>Login</button></br>
-	<button id='demographicsbutton' onclick="getData('demographics')" disabled>download demographics</button></br>
 	<button id='responsesbutton' onclick="getData('responses')" disabled >download responses</button>
 	<%}else{%>
-	<button id='demographicsbutton' onclick="getData('demographics')">download demographics</button></br>
 	<button id='responsesbutton' onclick="getData('responses')">download responses</button>
 	<%}%>
       </div>
